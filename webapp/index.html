@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat</title>
+</head>
+<body style="margin:0;">
+<textarea title="Chat Log" id="log" readonly
+          style="display: block; width: 100%; height: 600px; resize: none; margin: 0; padding: 0; border: 0;"></textarea>
+<input title="Chat Input" id="input" type="text" style="display: block; width: 100%; border-width: 1px 0 1px 0;"
+       autofocus/>
+<script>
+    let uri;
+    if (document.location.protocol == "https:") {
+        console.log(1)
+        uri = 'wss://localhost:8443/Web_Socket_WebApp-1.0-SNAPSHOT/ws';
+    }
+    else {
+        console.log(2)
+        uri = 'ws://localhost:8080/Web_Socket_WebApp-1.0-SNAPSHOT/ws';
+    }
+    var ws = new WebSocket(uri);
+    ws.onclose = () => {
+
+    }
+
+    ws.onmessage = function (event) {
+        console.log(event.data);
+        document.getElementById("log").value += "[" + timestamp() + "] " + event.data + "\n";
+    }
+
+    document.getElementById("input").addEventListener("keypress", function (event) {
+        if (event.key == 'Enter') {
+            ws.send(event.target.value);
+            event.target.value = "";
+        }
+    });
+
+    function timestamp() {
+        var d = new Date(), minutes = d.getMinutes();
+        if (minutes < 10) minutes = '0' + minutes;
+        return d.getHours() + ':' + minutes;
+    }
+</script>
+</body>
+</html>
